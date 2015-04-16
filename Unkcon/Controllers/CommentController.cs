@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
+using Unkcon.Models;
 
 namespace Unkcon.Controllers
 {
@@ -15,8 +16,9 @@ namespace Unkcon.Controllers
         {
             return View();
         }
+
         [HttpPost]
-        public async Task<ActionResult> Publish(string returnUrl)
+        public async Task<ActionResult> Publish(CommentModel commentModel, string returnUrl)
         {
             //TODO Plugin to EF
 

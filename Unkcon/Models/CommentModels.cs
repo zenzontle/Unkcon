@@ -2,7 +2,7 @@
 
 namespace Unkcon.Models
 {
-    public class CommentModels
+    public class CommentModel
     {
         [Required]
         [Display(Name = "Comment")]
