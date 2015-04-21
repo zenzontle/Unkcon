@@ -11,7 +11,7 @@ namespace Unkcon.DAL
     public class CommentContext : DbContext
     {
         public CommentContext()
-            :base("CommentContext")
+            : base("DefaultConnection")
         {
         }
 
