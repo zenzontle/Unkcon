@@ -7,22 +7,10 @@ using Unkcon.Models;
 
 namespace Unkcon.DAL
 {
-    public class CommentInitializer : System.Data.Entity.DropCreateDatabaseIfModelChanges<CommentContext>
+    public class CommentInitializer : System.Data.Entity.DropCreateDatabaseIfModelChanges<ApplicationDbContext>
     {
-        protected override void Seed(CommentContext context)
+        protected override void Seed(ApplicationDbContext context)
         {
-            List<UserModel> users = new List<UserModel>
-            {
-                new UserModel{UserName="Jorge"},
-                new UserModel{UserName="Alejandro"}
-            };
-
-            foreach (UserModel user in users)
-            {
-                context.Users.Add(user);
-            }
-            context.SaveChanges();
-
             List<CommentModel> comments = new List<CommentModel>
             {
                 new CommentModel{Comment = "A comment", PostedDate = DateTime.UtcNow, UserID = 1},

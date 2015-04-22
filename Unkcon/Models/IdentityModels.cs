@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNet.Identity.EntityFramework;
+using System.Data.Entity;
+using System.Data.Entity.ModelConfiguration.Conventions;
 
 namespace Unkcon.Models
 {
@@ -12,6 +14,14 @@ namespace Unkcon.Models
         public ApplicationDbContext()
             : base("DefaultConnection")
         {
+        }
+
+        public DbSet<CommentModel> Comments { get; set; }
+
+        protected override void OnModelCreating(DbModelBuilder modelBuilder)
+        {
+            modelBuilder.Conventions.Remove<PluralizingTableNameConvention>();
+            base.OnModelCreating(modelBuilder);
         }
     }
 }

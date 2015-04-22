@@ -13,7 +13,7 @@ namespace Unkcon.Controllers
 {
     public class CommentController : Controller
     {
-        private CommentContext db = new CommentContext();
+        private ApplicationDbContext db = new ApplicationDbContext();
 
         // GET: /Comment/
         public ActionResult Index()
