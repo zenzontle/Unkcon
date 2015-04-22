@@ -11,13 +11,5 @@ namespace Unkcon.Models
 
         [Required]
         public string Comment { get; set; }
-
-        [Required]
-        public DateTime PostedDate { get; set; }
-
-        [Required]
-        public virtual int UserID { get; set; }
-
-        public virtual int ParentCommentID { get; set; }
     }
 }

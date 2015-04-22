@@ -13,9 +13,9 @@ namespace Unkcon.DAL
         {
             List<CommentModel> comments = new List<CommentModel>
             {
-                new CommentModel{Comment = "A comment", PostedDate = DateTime.UtcNow, UserID = 1},
-                new CommentModel{Comment = "Another comment", PostedDate = DateTime.UtcNow, UserID = 2},
-                new CommentModel{Comment = "Yet another comment", PostedDate = DateTime.UtcNow, UserID = 2, ParentCommentID = 1}
+                new CommentModel{Comment = "A comment"},
+                new CommentModel{Comment = "Another comment"},
+                new CommentModel{Comment = "Yet another comment"}
             };
 
             foreach (CommentModel comment in comments)
