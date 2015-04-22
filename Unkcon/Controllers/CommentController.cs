@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNet.Identity;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
@@ -8,12 +9,20 @@ using System.Web;
 using System.Web.Mvc;
 using Unkcon.Models;
 using Unkcon.DAL;
+using Microsoft.AspNet.Identity.EntityFramework;
 
 namespace Unkcon.Controllers
 {
     public class CommentController : Controller
     {
         private ApplicationDbContext db = new ApplicationDbContext();
+
+        private UserManager<ApplicationUser> userManager;
+
+        public CommentController()
+        {
+            userManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(db));
+        }
 
         // GET: /Comment/
         public ActionResult Index()
@@ -47,10 +56,15 @@ namespace Unkcon.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include="ID,Comment,PostedDate,UserID,ParentCommentID")] CommentModel commentmodel)
+        public ActionResult Create([Bind(Include="ID,Comment")] CommentModel commentmodel)
         {
             if (ModelState.IsValid)
             {
+                // Get current logged in user. Could be made async.
+                string userId = User.Identity.GetUserId();
+                ApplicationUser currentUser = userManager.FindById<ApplicationUser>(userId);
+
+                commentmodel.User = currentUser;
                 db.Comments.Add(commentmodel);
                 db.SaveChanges();
                 return RedirectToAction("Index");
@@ -79,7 +93,7 @@ namespace Unkcon.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include="ID,Comment,PostedDate,UserID,ParentCommentID")] CommentModel commentmodel)
+        public ActionResult Edit([Bind(Include="ID,Comment")] CommentModel commentmodel)
         {
             if (ModelState.IsValid)
             {
