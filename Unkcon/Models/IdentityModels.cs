@@ -20,8 +20,18 @@ namespace Unkcon.Models
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
-            modelBuilder.Conventions.Remove<PluralizingTableNameConvention>();
             base.OnModelCreating(modelBuilder);
+            modelBuilder.Conventions.Remove<PluralizingTableNameConvention>();
+
+            modelBuilder.Entity<CommentModel>()
+                .HasMany(p => p.Replies)
+                .WithMany(p => p.Parent)
+                .Map(m =>
+                {
+                    m.MapLeftKey("ID");
+                    m.MapRightKey("RepliesId");
+                    m.ToTable("Replies", "");
+                });
         }
     }
 }
