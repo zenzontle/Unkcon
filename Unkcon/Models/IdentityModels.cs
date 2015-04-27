@@ -17,6 +17,7 @@ namespace Unkcon.Models
         }
 
         public DbSet<CommentModel> Comments { get; set; }
+        public DbSet<ReplyModels> Replies { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {

@@ -9,123 +9,132 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using Unkcon.Models;
-using Unkcon.DAL;
 
 namespace Unkcon.Controllers
 {
-    public class CommentController : Controller
+    public class ReplyController : Controller
     {
         private ApplicationDbContext db = new ApplicationDbContext();
 
         private UserManager<ApplicationUser> userManager;
 
-        public CommentController()
+        public ReplyController()
         {
             userManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(db));
         }
 
-        // GET: /Comment/
+        // GET: Reply
         public ActionResult Index()
         {
-            return View(db.Comments.ToList());
+            return View(db.Replies.ToList());
         }
 
-        // GET: /Comment/Details/5
+        // GET: Reply/Details/5
         public ActionResult Details(int? id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            CommentModel commentmodel = db.Comments.Find(id);
-            if (commentmodel == null)
+            ReplyModels replyModels = db.Replies.Find(id);
+            if (replyModels == null)
             {
                 return HttpNotFound();
             }
-            return View(commentmodel);
+            return View(replyModels);
         }
 
-        // GET: /Comment/Create
-        public ActionResult Create()
+        // GET: Reply/Create
+        public ActionResult Create(int? commentId)
         {
+            if (commentId == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
             return View();
         }
 
-        // POST: /Comment/Create
+        // POST: Reply/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include="ID,Comment")] CommentModel commentmodel)
+        public ActionResult Create([Bind(Include = "ID,Reply")] ReplyModels replyModels, int? commentId)
         {
+            if (commentId == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
             if (ModelState.IsValid)
             {
-                // Get current logged in user. Could be made async.
+                CommentModel comment = db.Comments.Find(commentId);
+                replyModels.Comment = comment;
+
                 string userId = User.Identity.GetUserId();
                 ApplicationUser currentUser = userManager.FindById<ApplicationUser>(userId);
 
-                commentmodel.User = currentUser;
-                db.Comments.Add(commentmodel);
+                db.Replies.Add(replyModels);
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
 
-            return View(commentmodel);
+            return View(replyModels);
         }
 
-        // GET: /Comment/Edit/5
+        // GET: Reply/Edit/5
         public ActionResult Edit(int? id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            CommentModel commentmodel = db.Comments.Find(id);
-            if (commentmodel == null)
+            ReplyModels replyModels = db.Replies.Find(id);
+            if (replyModels == null)
             {
                 return HttpNotFound();
             }
-            return View(commentmodel);
+            return View(replyModels);
         }
 
-        // POST: /Comment/Edit/5
+        // POST: Reply/Edit/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include="ID,Comment")] CommentModel commentmodel)
+        public ActionResult Edit([Bind(Include = "ID,Reply")] ReplyModels replyModels)
         {
             if (ModelState.IsValid)
             {
-                db.Entry(commentmodel).State = EntityState.Modified;
+                db.Entry(replyModels).State = EntityState.Modified;
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
-            return View(commentmodel);
+            return View(replyModels);
         }
 
-        // GET: /Comment/Delete/5
+        // GET: Reply/Delete/5
         public ActionResult Delete(int? id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            CommentModel commentmodel = db.Comments.Find(id);
-            if (commentmodel == null)
+            ReplyModels replyModels = db.Replies.Find(id);
+            if (replyModels == null)
             {
                 return HttpNotFound();
             }
-            return View(commentmodel);
+            return View(replyModels);
         }
 
-        // POST: /Comment/Delete/5
+        // POST: Reply/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            CommentModel commentmodel = db.Comments.Find(id);
-            db.Comments.Remove(commentmodel);
+            ReplyModels replyModels = db.Replies.Find(id);
+            db.Replies.Remove(replyModels);
             db.SaveChanges();
             return RedirectToAction("Index");
         }

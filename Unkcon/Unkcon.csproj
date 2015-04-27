@@ -163,6 +163,7 @@
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\CommentController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\ReplyController.cs" />
     <Compile Include="DAL\CommentInitializer.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -170,6 +171,7 @@
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\CommentModels.cs" />
     <Compile Include="Models\IdentityModels.cs" />
+    <Compile Include="Models\ReplyModels.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>
@@ -224,6 +226,11 @@
     <Content Include="Views\Comment\Details.cshtml" />
     <Content Include="Views\Comment\Edit.cshtml" />
     <Content Include="Views\Comment\Index.cshtml" />
+    <Content Include="Views\Reply\Create.cshtml" />
+    <Content Include="Views\Reply\Delete.cshtml" />
+    <Content Include="Views\Reply\Details.cshtml" />
+    <Content Include="Views\Reply\Edit.cshtml" />
+    <Content Include="Views\Reply\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
