@@ -22,6 +22,10 @@ namespace Unkcon.Models
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             modelBuilder.Conventions.Remove<PluralizingTableNameConvention>();
+            modelBuilder.Entity<ReplyModels>()
+                .HasRequired(b => b.Comment)
+                .WithMany()
+                .WillCascadeOnDelete(true);
             base.OnModelCreating(modelBuilder);
         }
     }

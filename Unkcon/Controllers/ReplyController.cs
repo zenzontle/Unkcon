@@ -24,9 +24,10 @@ namespace Unkcon.Controllers
         }
 
         // GET: Reply
-        public ActionResult Index()
+        public ActionResult Index(int commentId)
         {
-            return View(db.Replies.ToList());
+            CommentModel comment = db.Comments.Find(commentId);
+            return View(db.Replies.ToList().Where(t => t.Comment == comment));
         }
 
         // GET: Reply/Details/5
@@ -76,7 +77,7 @@ namespace Unkcon.Controllers
 
                 db.Replies.Add(replyModels);
                 db.SaveChanges();
-                return RedirectToAction("Index");
+                return RedirectToAction("Index", new { commentId = commentId });
             }
 
             return View(replyModels);

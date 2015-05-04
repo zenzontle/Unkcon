@@ -124,8 +124,8 @@ namespace Unkcon.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            CommentModel commentmodel = db.Comments.Find(id);
-            db.Comments.Remove(commentmodel);
+            CommentModel commentModel = db.Comments.Find(id);
+            db.Comments.Remove(commentModel);
             db.SaveChanges();
             return RedirectToAction("Index");
         }
