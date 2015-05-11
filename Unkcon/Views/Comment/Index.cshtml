@@ -29,7 +29,8 @@
                 <td>
                     @Html.ActionLink("Edit", "Edit", new { id = item.ID }) |
                     @Html.ActionLink("Reply", "Create", "Reply", new { commentId = item.ID }, null) |
-                    @Html.ActionLink("Delete", "Delete", new { id = item.ID })
+                    @Html.ActionLink("Delete", "Delete", new { id = item.ID }) |
+                    @Html.ActionLink("Download", "Download", new { id = item.ID })
                 </td>
             </tr>
         }

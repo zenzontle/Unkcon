@@ -119,6 +119,20 @@ namespace Unkcon.Controllers
             return View(commentmodel);
         }
 
+        public FileResult Download(int? id)
+        {
+            CommentModel commentModel = db.Comments.Find(id);
+
+            CommentDownloadViewModel commentToDownload = new CommentDownloadViewModel();
+            commentToDownload.ID = commentModel.ID;
+            commentToDownload.User = commentModel.User.UserName;
+            commentToDownload.Comment = commentModel.Comment;
+
+            string commentAsJson = Newtonsoft.Json.JsonConvert.SerializeObject(commentToDownload);
+            byte[] commentAsBytes = System.Text.Encoding.UTF8.GetBytes(commentAsJson);
+            return File(commentAsBytes, System.Net.Mime.MediaTypeNames.Text.Plain, String.Format("{0}.{1}", commentModel.ID.ToString(), "json"));
+        }
+
         // POST: /Comment/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
