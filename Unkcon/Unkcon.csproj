@@ -175,6 +175,7 @@
     <Compile Include="Models\ReplyModels.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
+    <Compile Include="Models\PotentialMatchViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap.css" />
@@ -231,6 +232,8 @@
     <Content Include="Views\Reply\Details.cshtml" />
     <Content Include="Views\Reply\Edit.cshtml" />
     <Content Include="Views\Reply\Index.cshtml" />
+    <Content Include="Views\Shared\PotentialMatch.cshtml" />
+    <Content Include="Views\Comment\Browse.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

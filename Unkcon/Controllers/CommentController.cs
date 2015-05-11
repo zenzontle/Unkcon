@@ -24,10 +24,37 @@ namespace Unkcon.Controllers
             userManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(db));
         }
 
-        // GET: /Comment/
+        // Broser other people's comments
+        public ActionResult Browse()
+        {
+            string userId = User.Identity.GetUserId();
+            ApplicationUser currentUser = userManager.FindById<ApplicationUser>(userId);
+
+            if (currentUser == null)
+            {
+                return View();
+            }
+            else
+            {
+                return View(db.Comments.ToList().Where(c => c.User != currentUser));
+            }
+
+        }
+
+        // See own comments
         public ActionResult Index()
         {
-            return View(db.Comments.ToList());
+            string userId = User.Identity.GetUserId();
+            ApplicationUser currentUser = userManager.FindById<ApplicationUser>(userId);
+
+            if (currentUser == null)
+            {
+                return View();
+            }
+            else
+            {
+                return View(db.Comments.ToList().Where(c => c.User == currentUser));
+            }
         }
 
         // GET: /Comment/Details/5

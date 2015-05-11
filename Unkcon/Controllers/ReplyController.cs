@@ -75,46 +75,48 @@ namespace Unkcon.Controllers
                 string userId = User.Identity.GetUserId();
                 ApplicationUser currentUser = userManager.FindById<ApplicationUser>(userId);
 
+                replyModels.User = currentUser;
                 db.Replies.Add(replyModels);
                 db.SaveChanges();
-                return RedirectToAction("Index", new { commentId = commentId });
+                return RedirectToAction("ViewPotentialMatch", new { commentId = commentId, replyId = replyModels.ID });
             }
 
             return View(replyModels);
         }
 
-        // GET: Reply/Edit/5
-        public ActionResult Edit(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            ReplyModels replyModels = db.Replies.Find(id);
-            if (replyModels == null)
-            {
-                return HttpNotFound();
-            }
-            return View(replyModels);
-        }
+        //NOTE Commented out while I figure out how to handle Edits
+        //// GET: Reply/Edit/5
+        //public ActionResult Edit(int? id)
+        //{
+        //    if (id == null)
+        //    {
+        //        return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+        //    }
+        //    ReplyModels replyModels = db.Replies.Find(id);
+        //    if (replyModels == null)
+        //    {
+        //        return HttpNotFound();
+        //    }
+        //    return View(replyModels);
+        //}
 
-        // POST: Reply/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "ID,Reply")] ReplyModels replyModels)
-        {
-            if (ModelState.IsValid)
-            {
-                db.Entry(replyModels).State = EntityState.Modified;
-                db.SaveChanges();
-                return RedirectToAction("Index");
-            }
-            return View(replyModels);
-        }
+        //// POST: Reply/Edit/5
+        //// To protect from overposting attacks, please enable the specific properties you want to bind to, for 
+        //// more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public ActionResult Edit([Bind(Include = "ID,Reply")] ReplyModels replyModels)
+        //{
+        //    if (ModelState.IsValid)
+        //    {
+        //        db.Entry(replyModels).State = EntityState.Modified;
+        //        db.SaveChanges();
 
-        // GET: Reply/Delete/5
+        //        return View(replyModels);
+        //    }
+        //    return View(replyModels);
+        //}
+
         public ActionResult Delete(int? id)
         {
             if (id == null)
@@ -138,6 +140,32 @@ namespace Unkcon.Controllers
             db.Replies.Remove(replyModels);
             db.SaveChanges();
             return RedirectToAction("Index");
+        }
+
+        public ActionResult ViewPotentialMatch(int? commentId, int? replyId)
+        {
+            if (commentId == null || replyId == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
+            CommentModel commentModel = db.Comments.Find(commentId);
+            if (commentModel == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
+            ReplyModels replyModel = db.Replies.Find(replyId);
+            if (replyModel == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
+            PotentialMatchViewModel potentialMatchViewModel = new PotentialMatchViewModel();
+            potentialMatchViewModel.Comment = commentModel.Comment;
+            potentialMatchViewModel.Reply = replyModel.Reply;
+
+            return View("PotentialMatch", potentialMatchViewModel);
         }
 
         protected override void Dispose(bool disposing)
