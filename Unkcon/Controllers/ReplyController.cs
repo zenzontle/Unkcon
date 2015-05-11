@@ -137,9 +137,13 @@ namespace Unkcon.Controllers
         public ActionResult DeleteConfirmed(int id)
         {
             ReplyModels replyModels = db.Replies.Find(id);
+
+            // Get comment ID of reply before deleting it so we can redirect to it.
+            int commentId = replyModels.Comment.ID;
+            
             db.Replies.Remove(replyModels);
             db.SaveChanges();
-            return RedirectToAction("Index");
+            return RedirectToAction("Index", new { commentId = commentId });
         }
 
         public ActionResult ViewPotentialMatch(int? commentId, int? replyId)

@@ -21,10 +21,13 @@
             @Html.DisplayFor(modelItem => item.Reply)
         </td>
         <td>
-            @Html.ActionLink("Details", "Details", new { id=item.ID }) |
+            @Html.ActionLink("Details", "Details", new { id=item.ID, commentID = item.Comment.ID }) |
             @Html.ActionLink("Delete", "Delete", new { id=item.ID })
         </td>
     </tr>
 }
 
 </table>
+<p>
+    @Html.ActionLink("Back to List", "Index", "Comment")
+</p>
