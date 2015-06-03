@@ -1,33 +1,33 @@
 ﻿using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.EntityFramework;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
+using Unkcon.Authentication;
 using Unkcon.Models;
 
 namespace Unkcon.Controllers
 {
     public class ReplyController : Controller
     {
-        private ApplicationDbContext db = new ApplicationDbContext();
-
-        private UserManager<ApplicationUser> userManager;
+        private ApplicationDbContext _db = new ApplicationDbContext();
+        private UserManagerDecorator _userManager;
 
         public ReplyController()
         {
-            userManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(db));
+            _userManager = new UserManagerDecorator(_db);
         }
 
         // GET: Reply
         public ActionResult Index(int commentId)
         {
-            CommentModel comment = db.Comments.Find(commentId);
-            return View(db.Replies.ToList().Where(t => t.Comment == comment));
+            CommentModel comment = _db.Comments.Find(commentId);
+            return View(_db.Replies.ToList().Where(t => t.Comment == comment));
         }
 
         // GET: Reply/Details/5
@@ -37,7 +37,7 @@ namespace Unkcon.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            ReplyModels replyModels = db.Replies.Find(id);
+            ReplyModels replyModels = _db.Replies.Find(id);
             if (replyModels == null)
             {
                 return HttpNotFound();
@@ -60,7 +60,7 @@ namespace Unkcon.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "ID,Reply")] ReplyModels replyModels, int? commentId)
+        public async Task<ActionResult> Create([Bind(Include = "ID,Reply")] ReplyModels replyModels, int? commentId)
         {
             if (commentId == null)
             {
@@ -69,15 +69,14 @@ namespace Unkcon.Controllers
 
             if (ModelState.IsValid)
             {
-                CommentModel comment = db.Comments.Find(commentId);
+                CommentModel comment = _db.Comments.Find(commentId);
                 replyModels.Comment = comment;
 
-                string userId = User.Identity.GetUserId();
-                ApplicationUser currentUser = userManager.FindById<ApplicationUser>(userId);
+                ApplicationUser currentUser = await _userManager.GetCurrentUserAsync(User.Identity.GetUserId());
 
                 replyModels.User = currentUser;
-                db.Replies.Add(replyModels);
-                db.SaveChanges();
+                _db.Replies.Add(replyModels);
+                _db.SaveChanges();
                 return RedirectToAction("ViewPotentialMatch", new { commentId = commentId, replyId = replyModels.ID });
             }
 
@@ -123,7 +122,7 @@ namespace Unkcon.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            ReplyModels replyModels = db.Replies.Find(id);
+            ReplyModels replyModels = _db.Replies.Find(id);
             if (replyModels == null)
             {
                 return HttpNotFound();
@@ -136,13 +135,13 @@ namespace Unkcon.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            ReplyModels replyModels = db.Replies.Find(id);
+            ReplyModels replyModels = _db.Replies.Find(id);
 
             // Get comment ID of reply before deleting it so we can redirect to it.
             int commentId = replyModels.Comment.ID;
             
-            db.Replies.Remove(replyModels);
-            db.SaveChanges();
+            _db.Replies.Remove(replyModels);
+            _db.SaveChanges();
             return RedirectToAction("Index", new { commentId = commentId });
         }
 
@@ -153,13 +152,13 @@ namespace Unkcon.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            CommentModel commentModel = db.Comments.Find(commentId);
+            CommentModel commentModel = _db.Comments.Find(commentId);
             if (commentModel == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            ReplyModels replyModel = db.Replies.Find(replyId);
+            ReplyModels replyModel = _db.Replies.Find(replyId);
             if (replyModel == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
@@ -176,7 +175,7 @@ namespace Unkcon.Controllers
         {
             if (disposing)
             {
-                db.Dispose();
+                _db.Dispose();
             }
             base.Dispose(disposing);
         }

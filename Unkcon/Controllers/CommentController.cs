@@ -1,34 +1,33 @@
 ﻿using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.EntityFramework;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
-using Unkcon.Models;
+using Unkcon.Authentication;
 using Unkcon.DAL;
+using Unkcon.Models;
 
 namespace Unkcon.Controllers
 {
     public class CommentController : Controller
     {
-        private ApplicationDbContext db = new ApplicationDbContext();
-
-        private UserManager<ApplicationUser> userManager;
+        private ApplicationDbContext _db = new ApplicationDbContext();
+        private UserManagerDecorator _userManager;
 
         public CommentController()
         {
-            userManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(db));
+            _userManager = new UserManagerDecorator(_db);
         }
 
         // Broser other people's comments
-        public ActionResult Browse()
+        public async Task<ActionResult> Browse()
         {
-            string userId = User.Identity.GetUserId();
-            ApplicationUser currentUser = userManager.FindById<ApplicationUser>(userId);
+            ApplicationUser currentUser = await _userManager.GetCurrentUserAsync(User.Identity.GetUserId());
 
             if (currentUser == null)
             {
@@ -36,16 +35,15 @@ namespace Unkcon.Controllers
             }
             else
             {
-                return View(db.Comments.ToList().Where(c => c.User != currentUser));
+                return View(_db.Comments.ToList().Where(c => c.User != currentUser));
             }
 
         }
 
         // See own comments
-        public ActionResult Index()
+        public async Task<ActionResult> Index()
         {
-            string userId = User.Identity.GetUserId();
-            ApplicationUser currentUser = userManager.FindById<ApplicationUser>(userId);
+            ApplicationUser currentUser = await _userManager.GetCurrentUserAsync(User.Identity.GetUserId());
 
             if (currentUser == null)
             {
@@ -53,7 +51,7 @@ namespace Unkcon.Controllers
             }
             else
             {
-                return View(db.Comments.ToList().Where(c => c.User == currentUser));
+                return View(_db.Comments.ToList().Where(c => c.User == currentUser));
             }
         }
 
@@ -64,7 +62,7 @@ namespace Unkcon.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            CommentModel commentmodel = db.Comments.Find(id);
+            CommentModel commentmodel = _db.Comments.Find(id);
             if (commentmodel == null)
             {
                 return HttpNotFound();
@@ -83,17 +81,15 @@ namespace Unkcon.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include="ID,Comment")] CommentModel commentmodel)
+        public async Task<ActionResult> Create([Bind(Include="ID,Comment")] CommentModel commentmodel)
         {
             if (ModelState.IsValid)
             {
-                // Get current logged in user. Could be made async.
-                string userId = User.Identity.GetUserId();
-                ApplicationUser currentUser = userManager.FindById<ApplicationUser>(userId);
+                ApplicationUser currentUser = await _userManager.GetCurrentUserAsync(User.Identity.GetUserId());
 
                 commentmodel.User = currentUser;
-                db.Comments.Add(commentmodel);
-                db.SaveChanges();
+                _db.Comments.Add(commentmodel);
+                _db.SaveChanges();
                 return RedirectToAction("Index");
             }
 
@@ -107,7 +103,7 @@ namespace Unkcon.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            CommentModel commentmodel = db.Comments.Find(id);
+            CommentModel commentmodel = _db.Comments.Find(id);
             if (commentmodel == null)
             {
                 return HttpNotFound();
@@ -124,8 +120,8 @@ namespace Unkcon.Controllers
         {
             if (ModelState.IsValid)
             {
-                db.Entry(commentmodel).State = EntityState.Modified;
-                db.SaveChanges();
+                _db.Entry(commentmodel).State = EntityState.Modified;
+                _db.SaveChanges();
                 return RedirectToAction("Index");
             }
             return View(commentmodel);
@@ -138,7 +134,7 @@ namespace Unkcon.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            CommentModel commentmodel = db.Comments.Find(id);
+            CommentModel commentmodel = _db.Comments.Find(id);
             if (commentmodel == null)
             {
                 return HttpNotFound();
@@ -148,7 +144,7 @@ namespace Unkcon.Controllers
 
         public FileResult Download(int? id)
         {
-            CommentModel commentModel = db.Comments.Find(id);
+            CommentModel commentModel = _db.Comments.Find(id);
 
             CommentDownloadViewModel commentToDownload = new CommentDownloadViewModel();
             commentToDownload.ID = commentModel.ID;
@@ -165,9 +161,9 @@ namespace Unkcon.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            CommentModel commentModel = db.Comments.Find(id);
-            db.Comments.Remove(commentModel);
-            db.SaveChanges();
+            CommentModel commentModel = _db.Comments.Find(id);
+            _db.Comments.Remove(commentModel);
+            _db.SaveChanges();
             return RedirectToAction("Index");
         }
 
@@ -175,7 +171,7 @@ namespace Unkcon.Controllers
         {
             if (disposing)
             {
-                db.Dispose();
+                _db.Dispose();
             }
             base.Dispose(disposing);
         }
